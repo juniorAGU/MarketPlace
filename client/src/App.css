@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+section{
+    width: 100%;
+    min-height: 100vh;
+}
+@keyframes slid {
+    from{
+        opacity: 1;
+        transform: translate(0);
+    }
+    to{
+        opacity: 0 ;
+        transform: translateX(-100px)
+    }
+}
