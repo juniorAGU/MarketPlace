@@ -4,7 +4,7 @@ import { Navigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 
 
-function RoutesGate({component: Component, isProtected,role}) {
+function RoutesGate({component: Component, isProtected,role, accountType}) {
 
     const {isAuthenticated, loading, user} = UseAuth();
 
@@ -20,6 +20,10 @@ function RoutesGate({component: Component, isProtected,role}) {
 
     if(!isAuthenticated){
         return <Navigate to='/login' replace/>
+    }
+
+    if (accountType && !accountType.includes(user.accountType)) {
+    return <Navigate to='/' replace />;
     }
 
 

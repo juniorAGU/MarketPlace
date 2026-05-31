@@ -21,6 +21,26 @@ function Navbar({setIsopen,isopen}) {
             >
                 Browse Products
             </NavLink>
+
+            {/* sellers page */}
+            <NavLink 
+                to={'/dashboard'} 
+                className={({isActive}) => `block text-[#E8EDE8]  transition-colors py-2 ${isActive ? 'bg-[#7C9A7E] text-white font-medium pl-2 rounded-md' 
+                : 'text-[#E8EDE8] hover:bg-[#1A1E1B] hover:text-[#7C9A7E] pl-2 rounded-md'}`}
+                onClick={() => setIsopen(false)}
+            >
+                Dashboard
+            </NavLink>
+
+            <NavLink 
+                to={'/addproduct'} 
+                className={({isActive}) => `block text-[#E8EDE8]  transition-colors py-2 ${isActive ? 'bg-[#7C9A7E] text-white font-medium pl-2 rounded-md' 
+                : 'text-[#E8EDE8] hover:bg-[#1A1E1B] hover:text-[#7C9A7E] pl-2 rounded-md'}`}
+                onClick={() => setIsopen(false)}
+            >
+                AddProduct
+            </NavLink>
+
             <NavLink 
                 to={'/sellers'} 
                 className={({isActive}) => `block text-[#E8EDE8]  transition-colors py-2 ${isActive ? 'bg-[#7C9A7E] text-white font-medium pl-2 rounded-md' 
@@ -29,6 +49,9 @@ function Navbar({setIsopen,isopen}) {
             >
                 Top Sellers
             </NavLink>
+            {/* End of Sellers page */}
+
+
             <NavLink 
                 to={'/about'} 
                 className={({isActive}) => `block text-[#E8EDE8]  transition-colors py-2 ${isActive ? 'bg-[#7C9A7E] text-white font-medium pl-2 rounded-md' 

@@ -4,6 +4,7 @@ import RoutesGate from './Components/RoutesGate';
 import Routes from './RoutsConfig/Routes';
 import LayeroutsSelector from './Layouts/LayeroutsSelector';
 import AuthContectProvider from './Context/AuthContect';
+import ProductcontextProvider from './Context/Productcontext';
 
 // internal packages
 import { createBrowserRouter,RouterProvider } from 'react-router-dom';
@@ -22,6 +23,7 @@ const router = createBrowserRouter([
                 component={route.components}
                 isProtected={route.isProtected}
                 role={route.role}
+                accountType={route.accountType}
             />
         )
       }))
@@ -31,9 +33,13 @@ const router = createBrowserRouter([
 
 function App() {
   return(
-    <AuthContectProvider>
-        <RouterProvider router={router}/>
-    </AuthContectProvider>
+    
+      <ProductcontextProvider>
+        <AuthContectProvider>
+            <RouterProvider router={router}/>
+        </AuthContectProvider>
+      </ProductcontextProvider>
+    
   )
     
   

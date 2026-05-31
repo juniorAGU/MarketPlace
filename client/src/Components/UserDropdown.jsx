@@ -51,7 +51,7 @@ const UserDropdown = ({ user }) => {
                 className='flex items-center gap-2'
             >
                 <img 
-                    src={user.avatar || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQloFBXdJpz-BwRdlA2tRGZabgoHaMMy3DAyRilDT0FRgQ7YymDiws_mQl0bv4LBMWjSnmMZErUS_Efaqug6UobclXP3pvUgkiliBV7PH9v&s=10'} 
+                    src={user.image || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQloFBXdJpz-BwRdlA2tRGZabgoHaMMy3DAyRilDT0FRgQ7YymDiws_mQl0bv4LBMWjSnmMZErUS_Efaqug6UobclXP3pvUgkiliBV7PH9v&s=10'} 
                     alt={user.name}
                     className='w-8 h-8 rounded-full object-cover border-2 border-[#7C9A7E]'
                 />

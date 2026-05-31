@@ -17,14 +17,31 @@ const productSchema = new Schema({
         required: true,
         min: 0
     },
-    image: {
-        type: String,
+    images: {
+        type: [String],
         required: true
     },
     category: {
         type: String,
         required: true,
-        enum: ["electronics", "clothing", "books", "others"]
+        enum: ["electronics", "fashion", "home & garden", "sports", "books", "beauty", "automotive", "others"]
+    },
+    condition: {
+        type: String,
+        enum: ["Brand New", "Like New", "Used - Good", "Used - Fair"]
+    },
+    quantity: {
+        type: Number,
+        default: 1,
+        min: 1
+    },
+    shippingFee: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
+    deliveryTime: {
+        type: String
     },
     seller: {
         type: mongoose.Schema.Types.ObjectId,

@@ -6,6 +6,8 @@ import MarketPlace from "../pages/MarketPlace";
 import About from "../pages/About";
 import ProductDetails from "../Components/ProductDetails";
 import EditProfile from "../Components/EditProfile";
+import SellerDashboard from "../pages/SellerDashboard";
+import AddProduct from "../pages/AddProduct";
 
 const Routes = [
     {
@@ -25,6 +27,20 @@ const Routes = [
         components: About,
         isProtected: false,
         role: ["user", "admin", "manager"]
+    },
+    {
+        path: "dashboard",
+        components: SellerDashboard,
+        isProtected: true,
+        role: ["user", "manager", "admin"],
+        accountType: "seller"
+    },
+    {
+        path: "/addproduct",
+        components: AddProduct,
+        isProtected: true,
+        role: ["user", "admin", "manager"],
+        accountType: "seller"
     },
     {
         path: "marketplace/:id",
