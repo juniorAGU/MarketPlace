@@ -13,6 +13,9 @@ import { xss } from 'express-xss-sanitizer';
 import { authRoute } from './routes/Authroute.js';
 import { basicLimiter } from './middlewears/ratelimiter.js';
 import { productRouth } from './routes/productRoutes.js';
+import { CommentRoute } from './routes/CommentRouth.js';
+import { LikesRouth } from './routes/likeRouth.js';
+
 
 
 
@@ -37,6 +40,8 @@ app.get("/", (req,res) => {
 // api Routes 
 app.use("/", authRoute);
 app.use("/", productRouth);
+app.use("/", CommentRoute);
+app.use("/", LikesRouth);
 
 
 

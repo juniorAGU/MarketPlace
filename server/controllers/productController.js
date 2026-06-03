@@ -5,6 +5,7 @@ import { User } from '../models/User.js';
 
 
 
+
 const CreateProducts = async(req,res,next) => {
     try{
 
@@ -69,12 +70,53 @@ const UpdateProduct = async (req,res,next) => {
 };
 
 const getProduct = async (req,res,next) => {
-    try{}catch(err){
+    try{
+
+        const allproduct = await Products.find()
+                .sort({createdAt: -1})
+                .populate("seller", "name image")
+                .lean();
+
+        res.status(200).json({
+            success: true,
+            message: "successful",
+            products: allproduct
+        })
+    }catch(err){
         console.log(err);
         return res.status(500).json({
             success: false,
             message: "internal Server Error!!"
         })
+    }
+
+}
+
+const getSpecificProduct = async (req,res,next) => {
+    try{
+
+        const id = req.params.id;
+
+        const findProduct = await Products.findById(id).populate("seller", "name image").lean();
+
+        if(!findProduct){
+            return res.status(404).json({
+                success: false,
+                message: "unable to get products"
+            });
+        };
+
+        res.status(200).json({
+            success: true,
+            message: "successful",
+            products: findProduct
+        })
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({
+            success: false,
+            message: "internal Server Problems"
+        });
     }
 
 }
@@ -89,4 +131,4 @@ const DeleteProduct = async (req, res, next) => {
     }
 }
 
-export {CreateProducts,UpdateProduct,getProduct,DeleteProduct}
+export {CreateProducts,UpdateProduct,getProduct,DeleteProduct,getSpecificProduct}

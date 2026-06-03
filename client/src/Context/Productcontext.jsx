@@ -1,11 +1,11 @@
 import { useState,useEffect, createContext } from "react";
-import { getProducts,CreateProducts,UpdateProducts } from "../Services/ProductServices";
+import { getProducts,CreateProducts,UpdateProducts,getSpecifiedProduct } from "../Services/ProductServices";
 
 export const ProductContext = createContext();
 
 function ProductcontextProvider({children}) {
 
-    const [products, setProducts] = useState(null);
+    const [products, setProducts] = useState([]);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
@@ -78,9 +78,9 @@ function ProductcontextProvider({children}) {
         setLoading(true);
         try{
 
-            const { product } = await getProducts();
+            const { products } = await getProducts();
 
-            setProducts(product);
+            setProducts(products);
 
             return true
 
@@ -92,6 +92,22 @@ function ProductcontextProvider({children}) {
         }
     }
 
+    const SpecificProduct = async (id) => {
+        setError(null);
+        setLoading(true);
+        try{
+
+            const data = await getSpecifiedProduct(id);
+
+            return data;
+
+
+        }catch(err){
+            console.log(err);
+            throw err
+        }
+    }
+
 
     const values = {
         Createone,
@@ -99,7 +115,8 @@ function ProductcontextProvider({children}) {
         loading,
         error,
         FetchProducts,
-        products
+        products,
+        SpecificProduct
 
     }
     return(

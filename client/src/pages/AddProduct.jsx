@@ -4,8 +4,10 @@ import { ChevronLeft, Upload, X,Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import UseProducts from '../Hooks/UseProducts';
 import UseMessage from '../Hooks/UseMessage';
+import { useNavigate } from 'react-router-dom';
 
 const AddProduct = () => {
+    const navigate = useNavigate();
     const [images, setImages] = useState([]);
     const [imagefiles, setImagefiles] = useState([])
     const { Createone } = UseProducts();
@@ -84,13 +86,16 @@ const AddProduct = () => {
                     quantity: "",
                     shippingFee: "",
                     deliveryTime: "",
+                    loading: false
                 });
+                setImagefiles([]);
+                setImages([]);
+                navigate("/dashboard");
             }
         }catch(err){
             console.log(err);
-            throw err
-        }finally{
             setData({...data,loading: false})
+            throw err
         }
 
 

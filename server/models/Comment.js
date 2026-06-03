@@ -2,14 +2,14 @@ import mongoose from "mongoose";
 import { Schema } from "mongoose";
 
 const commentSchema = new Schema({
-    Product: {
+    product: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "product",
-        required: trusted
+        ref: "Product",
+        required: true
     },
-    User: {
+    user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "user",
+        ref: "User",
         required: true
     },
     text: {

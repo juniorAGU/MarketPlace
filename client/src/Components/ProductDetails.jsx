@@ -1,31 +1,30 @@
 // Components/ProductDetails.jsx
-import React, { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Heart, MessageCircle, ChevronLeft, Star, Truck, ShieldCheck, RotateCcw } from 'lucide-react';
+import UseProducts from '../Hooks/UseProducts';
+import {Loader2} from 'lucide-react'
 
 function ProductDetails() {
     const { id } = useParams();
     const [quantity, setQuantity] = useState(1);
+    const [product, setProduct] = useState(null);
+    const { SpecificProduct, loading } = UseProducts();
 
-    const product = {
-        id: id,
-        seller: 'TechHub',
-        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100',
-        image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800',
-        name: 'Wireless Headphones',
-        price: '$89.99',
-        rating: 4.7,
-        reviews: 234,
-        sold: 1200,
-        description: 'Premium wireless headphones with active noise cancellation, 30-hour battery life, and ultra-comfortable memory foam ear cushions. Features Bluetooth 5.0, built-in microphone, and foldable design for easy storage.',
-        category: 'Electronics',
-        condition: 'Brand New',
-        shipping: 'Free Shipping',
-        warranty: '1 Year Warranty',
-        returnPolicy: '30 Days Return',
-        inStock: true,
-    };
+    useEffect(()=>{
+        SpecificProduct(id)
+        .then(({products}) => (setProduct(products)) )
+    },[id]);
 
+    console.log(product)
+
+    if (!product) {
+    return (
+        <section className='w-full min-h-screen bg-[#1A1E1B]  flex justify-center items-center'>
+            <Loader2 className='animate-spin text-[#7C9A7E]' />
+        </section>
+    );
+}
     return (
         <section className='w-full min-h-screen bg-[#1A1E1B] pt-20 px-4 pb-12'>
             
@@ -40,7 +39,7 @@ function ProductDetails() {
                 {/* Product Image - Rectangle */}
                 <article className='w-full aspect-video rounded-xl overflow-hidden mb-6'>
                     <img 
-                        src={product.image} 
+                        src={product.images[1]} 
                         alt={product.name}
                         className='w-full h-full object-cover'
                     />
@@ -50,12 +49,12 @@ function ProductDetails() {
                 <article className='flex items-center justify-between mb-6'>
                     <article className='flex items-center gap-3'>
                         <img 
-                            src={product.avatar} 
-                            alt={product.seller}
+                            src={product.seller.image} 
+                            alt={product.seller.name}
                             className='w-10 h-10 rounded-full object-cover'
                         />
                         <article>
-                            <p className='text-white font-semibold text-sm'>{product.seller}</p>
+                            <p className='text-white font-semibold text-sm'>{product.seller.name}</p>
                             <p className='text-[#E8EDE8]/50 text-xs'>{product.sold} sold</p>
                         </article>
                     </article>
@@ -69,7 +68,7 @@ function ProductDetails() {
                 {/* Name & Price */}
                 <article className='mb-6'>
                     <h1 className='text-white text-2xl font-bold mb-1'>{product.name}</h1>
-                    <p className='text-[#7C9A7E] text-3xl font-bold'>{product.price}</p>
+                    <p className='text-[#7C9A7E] text-3xl font-bold'>₦{Number(product.price).toLocaleString()}</p>
                 </article>
 
                 {/* Details Grid - Side by side */}
@@ -94,15 +93,15 @@ function ProductDetails() {
                 <article className='grid grid-cols-3 gap-3 mb-6'>
                     <article className='bg-[#252C26] rounded-lg p-3 text-center'>
                         <Truck size={20} className='text-[#7C9A7E] mx-auto mb-1' />
-                        <p className='text-[#E8EDE8] text-xs'>{product.shipping}</p>
+                        <p className='text-[#E8EDE8] text-xs'>₦{Number(product.shippingFee).toLocaleString()}</p>
                     </article>
                     <article className='bg-[#252C26] rounded-lg p-3 text-center'>
                         <ShieldCheck size={20} className='text-[#7C9A7E] mx-auto mb-1' />
-                        <p className='text-[#E8EDE8] text-xs'>{product.warranty}</p>
+                        <p className='text-[#E8EDE8] text-xs'>1 year waranty</p>
                     </article>
                     <article className='bg-[#252C26] rounded-lg p-3 text-center'>
                         <RotateCcw size={20} className='text-[#7C9A7E] mx-auto mb-1' />
-                        <p className='text-[#E8EDE8] text-xs'>{product.returnPolicy}</p>
+                        <p className='text-[#E8EDE8] text-xs'>No return after 30 days</p>
                     </article>
                 </article>
 
@@ -112,13 +111,15 @@ function ProductDetails() {
                     <article className='flex items-center gap-3'>
                         <button 
                             onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                            disabled={quantity <= 1}
                             className='w-8 h-8 bg-[#252C26] text-white rounded-lg flex items-center justify-center hover:bg-[#7C9A7E] transition-colors'
                         >
                             -
                         </button>
                         <span className='text-white text-sm w-6 text-center'>{quantity}</span>
                         <button 
-                            onClick={() => setQuantity(quantity + 1)}
+                            onClick={() => setQuantity(Math.min(product.quantity, quantity + 1))}
+                            disabled={quantity >= product.quantity  }
                             className='w-8 h-8 bg-[#252C26] text-white rounded-lg flex items-center justify-center hover:bg-[#7C9A7E] transition-colors'
                         >
                             +
@@ -130,7 +131,7 @@ function ProductDetails() {
                 <article className='flex items-center gap-5 mb-6'>
                     <button className='flex items-center gap-1.5 text-[#E8EDE8] hover:text-[#7C9A7E] transition-colors'>
                         <Heart size={22} />
-                        <span className='text-sm'>{product.reviews}</span>
+                        <span className='text-sm'>product reviews</span>
                     </button>
                     <button className='flex items-center gap-1.5 text-[#E8EDE8] hover:text-[#7C9A7E] transition-colors'>
                         <MessageCircle size={22} />
@@ -140,7 +141,7 @@ function ProductDetails() {
 
                 {/* Add to Cart - Full width at bottom */}
                 <button className='w-full py-4 bg-[#7C9A7E] text-white font-semibold rounded-lg hover:bg-[#5E7D61] transition-colors text-base'>
-                    Add to Cart - {product.price}
+                    Add to Cart - ₦{Number(product.price).toLocaleString()}
                 </button>
 
             </article>
@@ -150,3 +151,5 @@ function ProductDetails() {
 }
 
 export default ProductDetails;
+
+

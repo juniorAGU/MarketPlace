@@ -6,10 +6,17 @@ API.defaults.withCredentials = true;
 
 export const getProducts = async () => {
 
-    const {data } = API.get("/api/products");
+    const { data } = await API.get("/api/products");
 
     return data;
 
+}
+
+export const getSpecifiedProduct = async (id) => {
+
+    const { data } = await API.get(`/api/products/${id}`);
+
+    return data;
 }
 
 export const CreateProducts = async (userdata) => {

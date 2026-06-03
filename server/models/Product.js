@@ -45,7 +45,7 @@ const productSchema = new Schema({
     },
     seller: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "user",
+        ref: "User",
         required: true
     },
     status: {
@@ -56,7 +56,7 @@ const productSchema = new Schema({
     },
     buyer: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "user",
+        ref: "User",
         default: null
     }
 },
