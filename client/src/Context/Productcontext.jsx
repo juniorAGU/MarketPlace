@@ -1,11 +1,16 @@
 import { useState,useEffect, createContext } from "react";
-import { getProducts,CreateProducts,UpdateProducts,getSpecifiedProduct } from "../Services/ProductServices";
+import { getProducts,CreateProducts,UpdateProducts,getSpecifiedProduct,getmyProducts,DeleteProduct } from "../Services/ProductServices";
+import { data } from "react-router-dom";
 
 export const ProductContext = createContext();
 
 function ProductcontextProvider({children}) {
 
     const [products, setProducts] = useState([]);
+    const [myProducts, setMyProducts] = useState([]);
+    const [page, setPage] = useState(1);
+    const [totalpage, setTotalpage] = useState(1);
+    const [hasmore, setHasmore] = useState(true);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
@@ -72,13 +77,13 @@ function ProductcontextProvider({children}) {
         }
     }
 
-    const FetchProducts = async () => {
+    const FetchProducts = async (category='') => {
 
         setError(null);
         setLoading(true);
         try{
-
-            const { products } = await getProducts();
+            
+            const { products } = await getProducts(category);
 
             setProducts(products);
 
@@ -89,6 +94,42 @@ function ProductcontextProvider({children}) {
             setError(err.response.data.message || "Unable to fetch products")
         }finally{
             setLoading(false)
+        }
+    }
+
+    const FetchMyProducts = async (pageNum = 1) => {
+        setError(null);
+        setLoading(true);
+        try {
+            const response = await getmyProducts(pageNum);
+            console.log("Raw response:", response);
+            
+            
+            const products = response.products.data;
+            const totalPage = response.products.totalpage;
+            const page = response.products.page;
+
+            if (pageNum === 1) {
+                setMyProducts(products);
+            } else {
+                setMyProducts(prev => [...prev, ...products]);
+            }
+            setPage(page);
+            setTotalpage(totalPage);
+            setHasmore(page < totalPage);
+
+        } catch (err) {
+            console.log(err);
+            setError(err?.response?.data?.message || "Unable to get your products");
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const LoadMore = () => {
+        if(hasmore && !loading){
+            FetchMyProducts(page + 1)
         }
     }
 
@@ -108,6 +149,15 @@ function ProductcontextProvider({children}) {
         }
     }
 
+    const DeletemyProduct = async (id) => {
+
+        await DeleteProduct(id);
+
+        setMyProducts(prev => prev.filter(product => product._id !== id))
+
+        return true
+    }
+
 
     const values = {
         Createone,
@@ -116,8 +166,14 @@ function ProductcontextProvider({children}) {
         error,
         FetchProducts,
         products,
-        SpecificProduct
-
+        SpecificProduct,
+        myProducts,
+        FetchMyProducts,
+        page,
+        LoadMore,
+        totalpage,
+        hasmore,
+        DeletemyProduct
     }
     return(
         <ProductContext.Provider value={values}>

@@ -4,9 +4,11 @@ const API = axios.create({baseURL: "http://localhost:5000"});
 
 API.defaults.withCredentials = true;
 
-export const getProducts = async () => {
+export const getProducts = async (category= '') => {
 
-    const { data } = await API.get("/api/products");
+    const url = category ? `/api/products?category=${category}` : '/api/products';
+
+    const { data } = await API.get(url);
 
     return data;
 
@@ -15,6 +17,20 @@ export const getProducts = async () => {
 export const getSpecifiedProduct = async (id) => {
 
     const { data } = await API.get(`/api/products/${id}`);
+
+    return data;
+}
+
+export const getEditeSpecificProduct = async (id) => {
+
+    const { data } = await API.get(`/api/products/${id}`);
+
+    return data;
+}
+
+export const getmyProducts = async (pageNum = 1, limit = 10) => {
+
+    const { data } = await API.get(`/api/products/my?page=${pageNum}&limit=${limit}`);
 
     return data;
 }
@@ -32,4 +48,12 @@ export const UpdateProducts = async (userdata) => {
     const { data } = API.patch("/api/products", userdata);
 
     return data;
+}
+
+export const DeleteProduct = async (id) => {
+
+    const { data } = await API.delete(`/api/products/${id}`);
+
+    return data;
+
 }

@@ -8,6 +8,8 @@ import ProductDetails from "../Components/ProductDetails";
 import EditProfile from "../Components/EditProfile";
 import SellerDashboard from "../pages/SellerDashboard";
 import AddProduct from "../pages/AddProduct";
+import MyProducts from "../pages/MyProducts";
+import EditeProduct from "../pages/EditeProduct";
 
 const Routes = [
     {
@@ -43,10 +45,26 @@ const Routes = [
         accountType: "seller"
     },
     {
+        path: "/myproducts",
+        components: MyProducts,
+        isProtected: true,
+        role: ["user", "admin", "manager"],
+        accountType: "seller"
+
+    },
+    {
         path: "marketplace/:id",
         components: ProductDetails,
         isProtected: true,
         role: ["user", "admin", "manager"]
+
+    },
+    {
+        path: "editeproducts/:id",
+        components: EditeProduct,
+        isProtected: true,
+        role: ["user", "admin", "manager"],
+        accountType: "seller"
 
     },
     {

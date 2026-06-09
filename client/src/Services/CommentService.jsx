@@ -23,3 +23,17 @@ export const DeleteComment = async(productId) => {
 
     return data;
 }
+
+export const createLikes1 = async (productId) => {
+    
+    const { data } = await API.post(`/api/likes/${productId}`);
+
+    return data;
+}
+
+export const getLikes1 = async (productId) => {
+
+    const { data } = await API.get(`/api/likes/${productId}`);
+
+    return data;
+}

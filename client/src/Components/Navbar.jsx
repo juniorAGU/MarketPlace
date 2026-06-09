@@ -42,6 +42,15 @@ function Navbar({setIsopen,isopen}) {
             </NavLink>
 
             <NavLink 
+                to={'/myproducts'} 
+                className={({isActive}) => `block text-[#E8EDE8]  transition-colors py-2 ${isActive ? 'bg-[#7C9A7E] text-white font-medium pl-2 rounded-md' 
+                : 'text-[#E8EDE8] hover:bg-[#1A1E1B] hover:text-[#7C9A7E] pl-2 rounded-md'}`}
+                onClick={() => setIsopen(false)}
+            >
+                MyProducts
+            </NavLink>
+
+            <NavLink 
                 to={'/sellers'} 
                 className={({isActive}) => `block text-[#E8EDE8]  transition-colors py-2 ${isActive ? 'bg-[#7C9A7E] text-white font-medium pl-2 rounded-md' 
                 : 'text-[#E8EDE8] hover:bg-[#1A1E1B] hover:text-[#7C9A7E] pl-2 rounded-md'}`}

@@ -18,7 +18,7 @@ const BusinessEnvironment = (req) => {
 
 const policy = {
 
-    deletItem:  (user,product, environment) => {
+    deleteItem:  (user,product, environment) => {
         const isAdmin = user.role === "admin" || user.role === "manager"
         const isOwner = user._id.toString() === product.seller.toString();
 

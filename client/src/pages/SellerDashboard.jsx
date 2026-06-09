@@ -18,8 +18,8 @@ const SellerDashboard = () => {
     ];
 
     const quickActions = [
-        { label: 'Add New Product', to: '/dashboard/add-product', color: 'bg-[#7C9A7E] hover:bg-[#5E7D61]' },
-        { label: 'Manage Products', to: '/dashboard/products', color: 'bg-[#252C26] hover:bg-[#1A1E1B] border border-[#7C9A7E]' },
+        { label: 'Add New Product', to: '/addproduct', color: 'bg-[#7C9A7E] hover:bg-[#5E7D61]' },
+        { label: 'Manage Products', to: '/myproducts', color: 'bg-[#252C26] hover:bg-[#1A1E1B] border border-[#7C9A7E]' },
         { label: 'View Payouts', to: '/dashboard/payouts', color: 'bg-[#252C26] hover:bg-[#1A1E1B] border border-[#7C9A7E]' },
     ];
 

@@ -16,3 +16,17 @@ section{
         transform: translateX(-100px)
     }
 }
+.comment-scroll::-webkit-scrollbar {
+    width: 4px;
+}
+.comment-scroll::-webkit-scrollbar-track {
+    background: #252C26;
+    border-radius: 4px;
+}
+.comment-scroll::-webkit-scrollbar-thumb {
+    background: #7C9A7E;
+    border-radius: 4px;
+}
+.comment-scroll::-webkit-scrollbar-thumb:hover {
+    background: #5E7D61;
+}

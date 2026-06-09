@@ -71,8 +71,13 @@ const UpdateProduct = async (req,res,next) => {
 
 const getProduct = async (req,res,next) => {
     try{
+        const { category } = req.query;
 
-        const allproduct = await Products.find()
+        const filter = {};
+
+        if(category) filter.category = category
+
+        const allproduct = await Products.find(filter)
                 .sort({createdAt: -1})
                 .populate("seller", "name image")
                 .lean();
@@ -121,8 +126,47 @@ const getSpecificProduct = async (req,res,next) => {
 
 }
 
+const getSellersProduct = async (req,res,next) => {
+    try{
+        res.status(200).json({
+            success: true,
+            message: "successful",
+            products: res.pagination
+        })
+
+    }catch(err){
+        console.log(err)
+        res.status(500).json({
+            success: false,
+            message: "internal server Error"
+        })
+    }
+
+}
+
 const DeleteProduct = async (req, res, next) => {
-    try{}catch(err){
+    try{
+
+        const productId = req.params.id;
+
+        const product =  await Products.findById(productId);
+        
+        if(!product){
+            return res.status(404).json({
+                success: false,
+                message: "product not found"
+            });
+        };
+
+        await Products.findByIdAndDelete(productId);
+
+        res.status(200).json({
+            success: true,
+            message: "Deleted Successfully"
+        })
+
+
+    }catch(err){
         console.log(err)
         return res.status(500).json({
             success: false,
@@ -131,4 +175,4 @@ const DeleteProduct = async (req, res, next) => {
     }
 }
 
-export {CreateProducts,UpdateProduct,getProduct,DeleteProduct,getSpecificProduct}
+export {CreateProducts,UpdateProduct,getProduct,DeleteProduct,getSpecificProduct,getSellersProduct}

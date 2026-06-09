@@ -70,7 +70,7 @@ const Categories = () => {
                             return (
                                 <Link 
                                     key={index} 
-                                    to={`/products?category=${category.name.toLowerCase()}`}
+                                    to={`/marketplace?category=${category.name.toLowerCase()}`}
                                     className={`flex-shrink-0 transition-all duration-500 ease-in-out ${
                                         isVisible 
                                             ? 'opacity-100 translate-x-0' 

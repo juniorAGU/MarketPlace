@@ -13,7 +13,7 @@ const AddProduct = () => {
     const { Createone } = UseProducts();
     const {messages, Showmessage, typColo} = UseMessage();
 
-    const categories = ['electronics', 'fashion', 'home & garden', 'sports', 'books', 'beauty', 'automotive', 'other'];
+    const categories = ['electronics', 'fashion', 'home & garden', 'sports', 'books', 'furniture', 'automotive', 'other'];
 
     const conditions = ['Brand New', 'Like New', 'Used - Good', 'Used - Fair'];
 

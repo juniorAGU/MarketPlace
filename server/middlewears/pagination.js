@@ -9,7 +9,7 @@ export const paginat = (model) =>  {
 
         const skip = (page - 1) * limit;
 
-        const filter = {};
+        const filter = req.filter || {};
 
         if(req.params.productId){
             filter.product = req.params.productId

@@ -1,5 +1,6 @@
 
-import { useEffect,useState } from 'react';
+import { useEffect,useState, } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { Heart, MessageCircle,Loader2 } from 'lucide-react';
@@ -9,9 +10,11 @@ import UseProducts from '../Hooks/UseProducts';
 import  UseAuth from '../Hooks/UseAuth'
 import UseComments from '../Hooks/UseComments';
 import UseMessage from '../Hooks/UseMessage';
+import { getLikes1,createLikes1,getComments } from '../Services/CommentService';
 
 
 const MarketPlace = () => {
+    const [seachParams, setSearchParams] = useSearchParams();
 
     const { FetchProducts, products, loading } = UseProducts();
     const { user } = UseAuth();
@@ -24,7 +27,8 @@ const MarketPlace = () => {
     const [commentid,setCommentid] = useState(null);
     const [allcomments, setAllcomments] = useState({});
     const [commentdata, setCommentdata] = useState({text: "", loading: false});
-    const [recentcommentid, setRecentcommentid] = useState(null)
+    const [recentcommentid, setRecentcommentid] = useState(null);
+    const [commentCounts, setCommentCounts] = useState({});
     
 
     useEffect(() => {
@@ -43,7 +47,18 @@ const MarketPlace = () => {
                 [recentcommentid]: comments
             }))})
         }
-    },[recentcommentid])
+    },[recentcommentid]);
+    useEffect(() => {
+    if (products.length > 0) {
+        products.forEach(async (product) => {
+            const { comments } = await getComments(product._id);
+            setCommentCounts(prev => ({ 
+                ...prev, 
+                [product._id]: comments.length   // just the length
+            }));
+        });
+    }
+}, [products]);
 
     const handlechange = (e) => {
         const {name,value} = e.target;
@@ -84,29 +99,53 @@ const MarketPlace = () => {
 
     }
 
-    
+    const [likeProduct, setLikeProduct] = useState({});
+    const [likeCount, setLikeCount] = useState({});
+
+    useEffect(() => {
+    if (products && products.length > 0) {
+        products.forEach(async (product) => {
+            const { count } = await getLikes1(product._id);  
+            setLikeCount(prev => ({ ...prev, [product._id]: count }));
+        });
+    }
+}, [products]);
+
+    const handleLikes = async (productId) => {
+        
+        const { islike, count } = await createLikes1(productId);
+        setLikeProduct(prev => ({...prev, [productId]: islike}));
+        setLikeCount(prev => ({...prev, [productId]: count}))
+    }
 
 
-    // const products1 = [
-    //     { id: 1, seller: 'TechHub', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50', image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600', name: 'Wireless Headphones', price: '$89.99', likes: 234, comments: 18 },
-    //     { id: 2, seller: 'FashionHub', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=50', image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600', name: 'Classic Watch', price: '$129.99', likes: 456, comments: 32 },
-    //     { id: 3, seller: 'HomeEssentials', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=50', image: 'https://images.unsplash.com/photo-1544457070-4cd773b4d71e?w=600', name: 'Modern Chair', price: '$199.99', likes: 189, comments: 12 },
-    //     { id: 4, seller: 'GadgetZone', avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=50', image: 'https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?w=600', name: 'Laptop Stand', price: '$49.99', likes: 321, comments: 24 },
-    // ];
+    const Allfilter = seachParams.get("category") || "";
+    useEffect(() => {
+    FetchProducts(Allfilter);
+}, [Allfilter]);
+    const filters = ['All Products', 'Electronics', 'fashion', 'Furniture'];
+    const handleFilter = (filters) => {
+        if(filters === "All Products"){
+            setSearchParams({});
+        }else{
+            setSearchParams({category: filters.toLowerCase()})
+        }
+    }
 
-    const filters = ['All Products', 'Electronics', 'Clothing', 'Furniture'];
+    const FilterProducts = !Allfilter ? products : products.filter(p => p.category === Allfilter);
 
     return (
         <section className='bg-[#1A1E1B] py-16 md:py-24 px-4'>
             <article className='max-w-2xl mx-auto'>
                 
-                {/* Filter Buttons */}
+                
                 <article className='flex items-center gap-2 mb-10 overflow-x-auto scrollbar-hide'>
                     {filters.map((filter, index) => (
                         <button 
+                            onClick={() => handleFilter(filter)}
                             key={index}
                             className={`flex-shrink-0 px-5 py-2 rounded-full text-sm font-medium transition-colors ${
-                                index === 0 
+                                Allfilter === filter || (filter === 'All Products' && !seachParams.get('category'))
                                     ? 'bg-[#7C9A7E] text-white' 
                                     : 'bg-[#252C26] text-[#E8EDE8] hover:bg-[#7C9A7E] hover:text-white'
                             }`}
@@ -118,7 +157,7 @@ const MarketPlace = () => {
 
                 {/* Product Cards — Instagram style */}
                 <article className='space-y-8'>
-                    {products.map((product, index) => (
+                    {FilterProducts.map((product, index) => (
                         <motion.article 
                             
                             whileHover={{scale: 1.01,}}
@@ -153,9 +192,14 @@ const MarketPlace = () => {
                             <article className='p-4'>
                                 {/* Like & Comment */}
                                 <article className='flex items-center gap-5 mb-3'>
-                                    <button className='flex items-center gap-1.5 text-[#E8EDE8] hover:text-[#7C9A7E] transition-colors'>
-                                        <Heart size={22} />
-                                        <span className='text-sm'>{product.likes}</span>
+                                    <button
+                                        onClick={() => handleLikes(product._id)}
+                                        className='flex items-center gap-1.5 text-[#E8EDE8] hover:text-[#7C9A7E] transition-colors'>
+                                        <Heart size={22} 
+                                            fill={likeProduct[product._id] ? '#7C9A7E' : "none"}
+                                            className={likeProduct[product._id] ? 'text-[#7C9A7E]' : 'text-[#E8EDE8]'}
+                                        />
+                                        <span className='text-sm'>{likeCount[product._id] || 0}</span>
                                     </button>
                                     <button 
                                         onClick={() => {setCommentid(commentid === product._id ? null : product._id)
@@ -163,7 +207,7 @@ const MarketPlace = () => {
                                         }}
                                         className='flex items-center gap-1.5 text-[#E8EDE8] hover:text-[#7C9A7E] transition-colors'>
                                         <MessageCircle size={22} />
-                                        <span className='text-sm'>{(allcomments[product._id] || []).length}</span>
+                                        <span className='text-sm'>{allcomments[product._id] ? allcomments[product._id].length : commentCounts[product._id] || 0  }</span>
                                     </button>
                                 </article>
 
@@ -187,9 +231,9 @@ const MarketPlace = () => {
                                             </button>
                                         </form>
 
-                                        <article className='mt-4 space-y-3 max-h-60 overflow-y-auto'>
+                                        <article className='mt-4 space-y-3  max-h-[80px] overflow-y-auto comment-scroll'>
                                                 {(allcomments[product._id] || []).map((comment) => (
-                                                    <article key={comment._id} className='flex gap-3'>
+                                                    <article key={comment._id} className='flex gap-3  '>
                                                         <img 
                                                             src={comment.user?.image} 
                                                             alt={comment.user?.name}
