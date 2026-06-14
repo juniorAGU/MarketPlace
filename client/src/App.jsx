@@ -6,6 +6,7 @@ import LayeroutsSelector from './Layouts/LayeroutsSelector';
 import AuthContectProvider from './Context/AuthContect';
 import ProductcontextProvider from './Context/Productcontext';
 import CommentsProvider from './Context/CommentsProvider';
+import Cartprovider from './Context/Cartprovider';
 
 // internal packages
 import { createBrowserRouter,RouterProvider } from 'react-router-dom';
@@ -35,13 +36,15 @@ const router = createBrowserRouter([
 function App() {
   return(
     
-      <CommentsProvider>
-        <ProductcontextProvider>
-          <AuthContectProvider>
-              <RouterProvider router={router}/>
-          </AuthContectProvider>
-        </ProductcontextProvider>
-      </CommentsProvider>
+      <Cartprovider>
+        <CommentsProvider>
+          <ProductcontextProvider>
+            <AuthContectProvider>
+                <RouterProvider router={router}/>
+            </AuthContectProvider>
+          </ProductcontextProvider>
+        </CommentsProvider>
+      </Cartprovider>
     
   )
     

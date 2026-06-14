@@ -43,9 +43,11 @@ export const CreateProducts = async (userdata) => {
 
 }
 
-export const UpdateProducts = async (userdata) => {
+export const UpdateProducts = async (userdata,id) => {
+    console.log("Updating product with ID:", id);
 
-    const { data } = API.patch("/api/products", userdata);
+    const { data } = await API.patch(`/api/products/${id}`, userdata);
+
 
     return data;
 }

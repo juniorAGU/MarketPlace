@@ -10,6 +10,7 @@ import SellerDashboard from "../pages/SellerDashboard";
 import AddProduct from "../pages/AddProduct";
 import MyProducts from "../pages/MyProducts";
 import EditeProduct from "../pages/EditeProduct";
+import Cart from "../pages/Cart";
 
 const Routes = [
     {
@@ -36,6 +37,13 @@ const Routes = [
         isProtected: true,
         role: ["user", "manager", "admin"],
         accountType: "seller"
+    },
+    {
+        path: 'cart',
+        components: Cart,
+        isProtected: true,
+        role: ["user", "manager", "admin"],
+        accountType: "buyer"
     },
     {
         path: "/addproduct",

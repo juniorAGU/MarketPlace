@@ -3,8 +3,11 @@ import { useParams } from "react-router-dom";
 import { getSpecifiedProduct } from "../Services/ProductServices";
 import { Loader2,ArrowLeft, Upload, X } from "lucide-react";
 import { Link } from "react-router-dom";
+import UseProducts from "../Hooks/UseProducts";
+import UseMessage from "../Hooks/UseMessage";
 
 function EditeProduct() {
+    const { Update } = UseProducts();
     const [product, setProduct] = useState();
     const [loading,setLoading] =useState(true)
     const {id} = useParams();
@@ -14,16 +17,21 @@ function EditeProduct() {
         quantity: "",
         category: "",
         description: "",
-        status: "available"
+        status: "available",
+        shippingFee: "",
+        condition: "",
+        loading: false
     });
     const [images, setImages] = useState([]);
     const [imagePreviews, setImagePreviews] = useState([]);
     const [uploading, setUploading] = useState(false);
+    const {messages, Showmessage, typColo} = UseMessage();
 
     useEffect(() => {
         const fetchProduct = async () => {
             try{
-                const products =  await getSpecifiedProduct(id);
+                const productData =  await getSpecifiedProduct(id);
+                const products = productData.products
                 setProduct(products);
                 setFormData({
                     name: products.name || "",
@@ -31,7 +39,9 @@ function EditeProduct() {
                     quantity: products.quantity || "",
                     category: products.category || "",
                     description: products.description || "",
-                    status: products.status || ""
+                    status: products.status || "",
+                    shippingFee: products.shippingFee || "",
+                    condition: products.condition || ""
                 })
                 setImagePreviews(products.images || []);
 
@@ -81,7 +91,58 @@ function EditeProduct() {
         );
     }
 
-    
+    const handleSubmit = async (e,id) => {
+        e.preventDefault();
+
+        if(formData.name === "" || formData.price === "" || formData.category === "" || formData.description === "" || formData.quantity === "" || formData.status === ""){
+            Showmessage("failed","inputs must not be empty")
+            return
+        }
+
+        if(!images.length === 0){
+            Showmessage("warning", "it must contain one or two images");
+            return
+        }
+        setFormData({...formData,loading: true})
+        try{
+
+            const newData = {
+                name: formData.name,
+                category: formData.category,
+                description: formData.description,
+                price: formData.price,
+                quantity: formData.quantity,
+                status: formData.status,
+                shippingFee: formData.shippingFee,
+                condition: formData.condition,
+                images: images
+            }
+
+            const success = await Update(newData,id);
+
+            if(success){
+                setFormData({      
+                    name: "",
+                    price: "",
+                    quantity: "",
+                    category: "",
+                    description: "",
+                    status: "available",
+                    loading: false
+                })
+                setImagePreviews([]);
+                setImages([]);
+            }
+
+        }catch(err){
+            console.log(err)
+            throw err
+        }
+        
+
+    }
+
+    const conditions = ['Brand New', 'Like New', 'Used - Good', 'Used - Fair'];
 
     return (
         <section className="min-h-screen bg-[#1A1E1B] pt-20 px-4 pb-12">
@@ -101,7 +162,7 @@ function EditeProduct() {
                 </div>
 
                 {/* Form */}
-                <form className="space-y-6">
+                <form onSubmit={(e) => handleSubmit(e,id)} className="space-y-6">
                     {/* Product Name */}
                     <div>
                         <label className="block text-[#E8EDE8] text-sm font-medium mb-2">
@@ -182,10 +243,38 @@ function EditeProduct() {
                             >
                                 <option value="available">Available</option>
                                 <option value="sold">Sold</option>
-                                <option value="reserved">Reserved</option>
                             </select>
                         </div>
                     </div>
+                    <article className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <article>
+                            <label className='block text-sm font-medium text-[#E8EDE8] mb-2'>Shipping Fee (₦)</label>
+                                <input 
+                                    name='shippingFee'
+                                    value={formData.shippingFee}
+                                    onChange={handleChange}
+                                    type="number"
+                                    placeholder="0.00"
+                                    max={50000}
+                                    min={0}
+                                    className='w-full px-4 py-3 bg-[#252C26] border border-[#7C9A7E] rounded-lg text-white placeholder-[#E8EDE8]/50 focus:outline-none focus:ring-2 focus:ring-[#7C9A7E] focus:border-transparent transition'
+                                />
+                        </article>
+                        <article>
+                            <label className='block text-sm font-medium text-[#E8EDE8] mb-2'>Condition</label>
+                                <select 
+                                    name='condition'
+                                    onChange={handleChange}
+                                    value={formData.condition}
+                                    className='w-full px-4 py-3 bg-[#252C26] border border-[#7C9A7E] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#7C9A7E] focus:border-transparent transition'>
+                                    <option value=''>Select condition</option>
+                                    {conditions.map(cond => (
+                                        <option key={cond} value={cond}>{cond}</option>
+                                    ))}
+                                </select>
+                        </article>
+
+                    </article>
 
                     {/* Images */}
                     <div>
@@ -237,6 +326,8 @@ function EditeProduct() {
                             </div>
                         )}
                     </div>
+
+                    
 
                     {/* Description */}
                     <div>

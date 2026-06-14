@@ -92,7 +92,8 @@ const CreatOneLog = async (req, res, next) => {
                 id: checkExistence._id,
                 name: checkExistence.name,
                 email: checkExistence.email,
-                role: checkExistence.role
+                role: checkExistence.role,
+                accountType: checkExistence.accountType  
             }
         })
     }catch(err){

@@ -7,7 +7,6 @@ import UseMessage from '../Hooks/UseMessage';
 
 const MyProducts = () => {
     const {  myProducts,FetchMyProducts, loading, page,LoadMore,totalpage,hasmore,DeletemyProduct } = UseProducts();
-    console.log({ totalpage, page, hasmore, loading });
     const { Showmessage, typColo, messages } = UseMessage();
     const [deleteId, setDeleteId] = useState(null);
 

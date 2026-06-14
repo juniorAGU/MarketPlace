@@ -11,6 +11,7 @@ import  UseAuth from '../Hooks/UseAuth'
 import UseComments from '../Hooks/UseComments';
 import UseMessage from '../Hooks/UseMessage';
 import { getLikes1,createLikes1,getComments } from '../Services/CommentService';
+import UseCart from '../Hooks/UseCart';
 
 
 const MarketPlace = () => {
@@ -20,6 +21,7 @@ const MarketPlace = () => {
     const { user } = UseAuth();
     const { PostComment, GetComments,} = UseComments();
     const { Showmessage,typColo,messages} = UseMessage();
+    const { AddToCart, FetchCart, cart,} = UseCart();
     
 
     
@@ -133,6 +135,7 @@ const MarketPlace = () => {
     }
 
     const FilterProducts = !Allfilter ? products : products.filter(p => p.category === Allfilter);
+
 
     return (
         <section className='bg-[#1A1E1B] py-16 md:py-24 px-4'>
@@ -262,6 +265,7 @@ const MarketPlace = () => {
                             {/* Add to Cart Button */}
                             <article className='px-4 pb-4'>
                                 <motion.button
+                                    onClick={() => AddToCart(product._id, 1)}
                                     whileHover={{scale: 1.02}}
                                     whileTap={{scale: 1.90}}
                                     className='w-full py-3 bg-[#7C9A7E] text-white font-semibold rounded-lg hover:bg-[#5E7D61] transition-colors'>

@@ -18,5 +18,5 @@ productRouth.post("/api/products", protect, Authorize(["seller"]), Upload.array(
 
 // managament routes
 
-productRouth.patch("/api/products/:id", protect, abac("updateItem"),Upload.single("image"), UpdateProduct);
+productRouth.patch("/api/products/:id", protect, abac("updateItem"),Upload.array("images",5), UpdateProduct);
 productRouth.delete("/api/products/:id",protect, Authorize(["seller"]),abac("deleteItem"), DeleteProduct);

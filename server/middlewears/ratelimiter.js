@@ -14,7 +14,7 @@ export const basicLimiter = Limiter({
 
 export const AuthLimiter = Limiter({
     windowMs: 5 * 60 * 1000,
-    max: 100,
+    max: 1000,
     keyGenerator: (req) => {
         return `${ipKeyGenerator(req.ip)}-${req.body.email}`
     },

@@ -8,14 +8,18 @@ let cashedUser = null;
 
 export const registerUser = async (userDater) => {
 
-    const { data } = await API.post("/api/register", userDater)
+    const { data } = await API.post("/api/register", userDater);
+
+    cashedUser = null;
 
     return data;
 };
 
 export const loginUser = async (userdata) => {
 
-    const { data } = await API.post("/api/login", userdata)
+    const { data } = await API.post("/api/login", userdata);
+
+    cashedUser = null;
 
     return data;
 };
@@ -39,6 +43,8 @@ export const logoutServices = async () => {
 export const updateUser = async (formData) => {
 
     const { data } = await API.patch("/users/profile", formData);
+
+    cashedUser = null;
 
     return data;
 

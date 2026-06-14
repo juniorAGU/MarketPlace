@@ -59,7 +59,8 @@ const CreateUser = async (req, res, next ) => {
                 id: newUser._id,
                 name: newUser.name,
                 email: newUser.email,
-                role: newUser.role
+                role: newUser.role,
+                accountType: newUser.accountType  
             }
         });
 

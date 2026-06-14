@@ -15,6 +15,7 @@ function Home() {
 
     const [isopen, setIsopen] = useState(false);
     const { isAuthenticated, user} = UseAuth();
+    console.log("Home - Auth state:", isAuthenticated, user);
 
 
     return (

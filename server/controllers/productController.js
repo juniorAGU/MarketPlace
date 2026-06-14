@@ -2,6 +2,7 @@ import sanitizer from 'mongo-sanitize';
 import { UploadToCloudinary } from '../CloudinaryConfig/cloudinary.js';
 import { Products } from '../models/Product.js';
 import { User } from '../models/User.js';
+import { response } from 'express';
 
 
 
@@ -60,7 +61,53 @@ const CreateProducts = async(req,res,next) => {
 };
 
 const UpdateProduct = async (req,res,next) => {
-    try{}catch(err){
+    try{
+
+        const productId =  req.params.id;
+
+        const cleaned =  sanitizer(req.body);
+
+        const { name, category, condition, price, quantity, description, shippingFee, } = cleaned;
+
+        if(!name || !category || !condition || !price || !quantity || !description || !shippingFee){
+            return res.status(400).json({
+                success: false,
+                message: "inputs fields must not be empty"
+            })
+        }
+
+        const findproduct = await Products.findById(productId);
+        
+        if(!findproduct){
+            return res.status(404).json({
+                success: false,
+                message: "product not found"
+            });
+        };
+
+        if(!req.files){
+            return res.status(400).json({
+                success: false,
+                message: "image must be added"
+            })
+        };
+
+        const cloudinaryUploader = await  Promise.all(req.files.map(file => UploadToCloudinary(file.buffer) ));
+
+        const images = cloudinaryUploader.map(img => img.secure_url);
+
+        const updatDetails = {name,category,condition,price,quantity,description,shippingFee,images}
+
+        const update = await Products.findByIdAndUpdate(productId,updatDetails,{returnDocument: 'after'}).lean();
+            
+
+        res.status(200).json({
+            success: true,
+            message: "successful",
+            product: update
+        })                
+
+    }catch(err){
         console.log(err);
         return res.status(500).json({
             success: false,

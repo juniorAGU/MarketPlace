@@ -48,7 +48,7 @@ function ProductcontextProvider({children}) {
         }
     }
 
-    const Update = async (userdata) => {
+    const Update = async (userdata,id) => {
 
         setError(null)
         try{
@@ -61,12 +61,11 @@ function ProductcontextProvider({children}) {
                 formdata.append("price", userdata.price);
                 formdata.append("quantity", userdata.quantity);
                 formdata.append("shippingFee", userdata.shippingFee);
-                formdata.append("deliveryTime", userdata.deliveryTime);
 
                 if(userdata.images && userdata.images.length > 0){
                 userdata.images.forEach(file => formdata.append("images", file))
             };
-            const { product } = await UpdateProducts(formdata);
+            const { product } = await UpdateProducts(formdata,id);
 
             return true;
 
@@ -102,7 +101,7 @@ function ProductcontextProvider({children}) {
         setLoading(true);
         try {
             const response = await getmyProducts(pageNum);
-            console.log("Raw response:", response);
+            
             
             
             const products = response.products.data;
