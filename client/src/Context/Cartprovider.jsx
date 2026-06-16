@@ -1,5 +1,6 @@
 import { useState, useEffect, createContext } from "react";
-import { createCart,getCart } from "../Services/CartService";
+import { createCart,getCart, updateCartItem, clearCart,removeFromCart } from "../Services/CartService";
+
 
 export const CartContext = createContext();
 function Cartprovider({children}) {
@@ -43,11 +44,55 @@ function Cartprovider({children}) {
 
     }
 
+    const UpdateCart = async (productId, quantity) => {
+        setError(null);
+        try{
+
+            const { cart } =  await updateCartItem(productId,quantity);
+
+            setCart(cart)
+
+            return true
+
+        }catch(err){
+            console.log(err)
+            setError(err?.response?.data?.message || "unable to Update Cart")
+            throw err
+        }
+    }
+
+    const RemoveItem = async (productId) => {
+        setError(null);
+        try{
+
+            const { cart } = await removeFromCart(productId);
+
+            setCart(cart);
+
+            return true
+
+        }catch(err){
+            console.log(err);
+            setError(err?.response?.data?.message || "unable to remove item");
+            throw err
+        }
+    };
+
+    const cleraAllCart =  async () => {
+
+        await clearCart();
+
+    }
+
 
 
     const values = {
         AddToCart,
         FetchCart,
+        UpdateCart,
+        RemoveItem,
+        cleraAllCart,
+        setCart,
         cart,
         loading,
         error

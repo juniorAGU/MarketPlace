@@ -100,7 +100,77 @@ const getCart = async (req,res,next) => {
 };
 
 const UpdateCart = async (req,res,next) => {
-    try{}catch(err){
+    try{
+
+        const cleaned =  sanitize(req.body);
+
+        const userId = req.user._id;
+
+        const itemId =  req.params.itemId;
+        
+
+        const { quantity } = cleaned;
+        
+
+        if(!quantity || quantity < 1){
+            return res.status(400).json({
+                success: false,
+                message: "quantity must be atleast 1"
+            });
+        };
+
+        const findCart =  await Cart.findOne({user: userId});
+
+        if(!findCart){
+            return res.status(404).json({
+                success: false,
+                message: "Cart not found" 
+            });
+        };
+
+        const cartItem = findCart.items.find(pro => pro._id.toString() === itemId);
+        if(!cartItem){
+            return res.status(404).json({
+                success: false,
+                message: "cart item no found"
+            });
+        };
+
+        const product = await Products.findById(cartItem.product);
+        if(!product){
+            return res.status(404).json({
+                success: false,
+                message: "product not found"
+            });
+        };
+
+        if(quantity > product.quantity ){
+            return res.status(400).json({
+                success: false,
+                message: `only ${product.quantity} is available`
+            })
+        }
+
+        cartItem.quantity = quantity
+
+        findCart.totalprice = findCart.items.reduce((sum, pro) => sum + (pro.price * pro.quantity),0);
+
+        findCart.totalqauntity = findCart.items.reduce((sum, pro) => sum + pro.quantity,0);
+
+        await findCart.save();
+
+        const update = await Cart.findById(findCart._id)
+                        .populate("items.product", "name images price quantity")
+                        .lean();
+        
+        res.status(200).json({
+            success: true,
+            message: "successful",
+            cart: update
+        })
+
+
+    }catch(err){
         console.log(err);
         return res.status(500).json({
             success: false,
@@ -110,7 +180,39 @@ const UpdateCart = async (req,res,next) => {
 };
 
 const DeleteSpecificCart = async (req,res,next) => {
-    try{}catch(err){
+    try{
+
+        const userId = req.user._id;
+
+        const itmId = req.params.itemId;
+
+        const findcart = await Cart.findOne({user: userId});
+
+        if(!findcart){
+            return res.status(404).json({
+                success: false,
+                message: "user Cart not found",
+            });
+        };
+
+        findcart.items = findcart.items.filter(pro => pro._id.toString() !== itmId);
+
+        findcart.totalprice = findcart.items.reduce((sum, pro) => sum + (pro.price * pro.quantity),0);
+        findcart.totalqauntity = findcart.items.reduce((sum, pro) => sum + pro.quantity, 0);
+
+        await findcart.save();
+
+        const update = await Cart.findById(findcart._id)
+                    .populate("items.product", "name images price")
+                    .lean();
+
+        res.status(200).json({
+            success: true,
+            message: "successful",
+            cart: update
+        })
+
+    }catch(err){
         console.log(err);
         return res.status(500).json({
             success: false,
@@ -120,7 +222,27 @@ const DeleteSpecificCart = async (req,res,next) => {
 };
 
 const DeleteCart = async (req,res,next) => {
-    try{}catch(err){
+    try{
+
+        const userId = req.user._id;
+
+        const find = await Cart.findOne({user: userId});
+
+        if(!find){
+            return res.status(404).json({
+                success: false,
+                message: "cart not found"
+            });
+        };
+
+        await Cart.findOneAndDelete({user: userId});
+
+        res.status(200).json({
+            success: true,
+            message: "success"
+        })
+
+    }catch(err){
         console.log(err);
         return res.status(500).json({
             success: false,

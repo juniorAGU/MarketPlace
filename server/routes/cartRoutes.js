@@ -10,6 +10,7 @@ export const CartRoutes = express.Router();
 CartRoutes.post("/api/cart", protect, Authorize(["buyer"]), CreateCart);
 CartRoutes.get("/api/cart", protect, Authorize(["buyer"]), getCart);
 
-CartRoutes.patch("/api/cart/:itemId", protect,  Authorize(["buyer"]), abac("updateItem"), UpdateCart);
-CartRoutes.delete("/api/cart/itemId", protect, Authorize(["buyer"]), abac("deleteItem"), DeleteSpecificCart);
-CartRoutes.delete("/api/cart/", protect,  Authorize(["buyer"]), abac("deleteItem"), DeleteCart);
+CartRoutes.patch("/api/cart/:itemId", protect,  Authorize(["buyer"]),  UpdateCart);
+
+CartRoutes.delete("/api/cart/:itemId", protect, Authorize(["buyer"]), DeleteSpecificCart);
+CartRoutes.delete("/api/cart", protect,  Authorize(["buyer"]), DeleteCart);

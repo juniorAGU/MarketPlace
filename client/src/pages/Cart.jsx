@@ -3,9 +3,12 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, Trash2, Minus, Plus, ShoppingBag, Loader2 } from 'lucide-react';
 import UseCart from '../Hooks/UseCart';
+import UseMessage from '../Hooks/UseMessage';
 
 const Cart = () => {
-    const { cart, loading, FetchCart, UpdateCartItem, RemoveFromCart, ClearCart } = UseCart();
+    const { AddToCart, FetchCart, UpdateCart, RemoveItem, cleraAllCart, cart, loading, error,setCart,} = UseCart();
+    const {messages,Showmessage,typColo } = UseMessage();
+    
 
     useEffect(() => {
         FetchCart();
@@ -13,12 +16,28 @@ const Cart = () => {
 
     const handleQuantity = async (itemId, newQty) => {
         if (newQty < 1) return;
-        await UpdateCartItem(itemId, newQty);
-        FetchCart();
+
+        // setCart(prev => ({
+        //     ...prev,
+        //     items: prev.items.map(item => item._id === itemId ? { ...item, quantity: newQty} : item),
+        //     totalprice: prev.items.reduce((sum, pro) => sum + (pro.price * (pro._id === itemId ? newQty : pro.quantity)),0),
+        //     totalquantity: prev.items.reduce((sum,pro) => sum + (pro._id === itemId ? newQty : pro.quantity),0)
+        // }))
+        try{
+
+            await UpdateCart(itemId, newQty);
+
+        }catch(err){
+            console.log(" handleQUANTITY Error!!!",err?.response?.data?.message);
+            Showmessage("failed", err?.response?.data?.message || "unable to update quantity")
+            FetchCart();
+        }
+        
+        
     };
 
     const handleRemove = async (itemId) => {
-        await RemoveFromCart(itemId);
+        await RemoveItem(itemId);
         FetchCart();
     };
 
@@ -52,7 +71,6 @@ const Cart = () => {
         <section className='w-full min-h-screen bg-[#1A1E1B] pt-20 px-4 pb-12'>
             <article className='max-w-6xl mx-auto'>
 
-                {/* Header */}
                 <article className='flex items-center justify-between mb-10'>
                     <article className='flex items-center gap-4'>
                         <Link 
@@ -63,11 +81,11 @@ const Cart = () => {
                         </Link>
                         <article>
                             <h1 className='text-white text-2xl font-bold'>Shopping Cart</h1>
-                            <p className='text-[#E8EDE8]/50 text-sm'>{cart.totalQuantity || cart.items.length} items</p>
+                            <p className='text-[#E8EDE8]/50 text-sm'>{cart.totalquantity || cart.items.length} items</p>
                         </article>
                     </article>
                     <button 
-                        onClick={ClearCart}
+                        onClick={cleraAllCart}
                         className='text-[#E8EDE8]/50 text-sm hover:text-red-400 transition-colors'
                     >
                         Clear All
@@ -83,7 +101,7 @@ const Cart = () => {
                                 key={item._id}
                                 className='bg-[#252C26] rounded-xl p-5 flex gap-5'
                             >
-                                {/* Product Image — bigger */}
+                                
                                 <Link to={`/marketplace/${item.product?._id}`} className='flex-shrink-0'>
                                     <img 
                                         src={item.product?.images?.[0]} 
@@ -117,7 +135,8 @@ const Cart = () => {
                                             <span className='text-white font-semibold w-8 text-center'>{item.quantity}</span>
                                             <button 
                                                 onClick={() => handleQuantity(item._id, item.quantity + 1)}
-                                                className='w-9 h-9 bg-[#1A1E1B] text-[#E8EDE8] rounded-lg flex items-center justify-center hover:bg-[#7C9A7E] transition-colors'
+                                                disabled={item.quantity >= item.product?.quantity}
+                                                className='w-9 h-9 bg-[#1A1E1B] text-[#E8EDE8] rounded-lg flex items-center justify-center hover:bg-[#7C9A7E] transition-colors disabled:opacity-30 disabled:cursor-not-allowed'
                                             >
                                                 <Plus size={16} />
                                             </button>
@@ -148,7 +167,7 @@ const Cart = () => {
                             
                             <article className='space-y-4 text-sm mb-6'>
                                 <article className='flex justify-between'>
-                                    <span className='text-[#E8EDE8]/60'>Subtotal ({cart.totalQuantity || cart.items.length} items)</span>
+                                    <span className='text-[#E8EDE8]/60'>Subtotal ({cart.totalquantity || cart.items.length} items)</span>
                                     <span className='text-white font-medium'>₦{Number(cart.totalprice).toLocaleString()}</span>
                                 </article>
                                 <article className='flex justify-between'>
@@ -185,6 +204,15 @@ const Cart = () => {
                 </article>
 
             </article>
+            {
+                messages && (
+                    <div className={`slider fixed top-4 right-4 text-white px-4 py-2 rounded z-50 ${typColo[messages.type]} `}>
+                        <h1>
+                            {messages.message}
+                        </h1>
+                    </div>
+                )
+            }
         </section>
     );
 };

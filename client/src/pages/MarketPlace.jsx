@@ -31,7 +31,12 @@ const MarketPlace = () => {
     const [commentdata, setCommentdata] = useState({text: "", loading: false});
     const [recentcommentid, setRecentcommentid] = useState(null);
     const [commentCounts, setCommentCounts] = useState({});
+    const [addingToCart, setAddingToCart] = useState({});
+
     
+    useEffect(() => {
+        FetchCart();
+    },[]);
 
     useEffect(() => {
         AOS.init({ duration: 800, once: false });
@@ -136,6 +141,11 @@ const MarketPlace = () => {
 
     const FilterProducts = !Allfilter ? products : products.filter(p => p.category === Allfilter);
 
+    const GetQuantityforcart = (productId) => {
+        const item = cart?.items.find(pro => ( pro.product?._id || pro.product) === productId);
+        return item?.quantity || 0
+    }
+
 
     return (
         <section className='bg-[#1A1E1B] py-16 md:py-24 px-4'>
@@ -160,7 +170,13 @@ const MarketPlace = () => {
 
                 {/* Product Cards — Instagram style */}
                 <article className='space-y-8'>
-                    {FilterProducts.map((product, index) => (
+                    {FilterProducts.map((product, index) => {
+                        
+                        const cartQuantity = GetQuantityforcart(product._id);
+                        const isMax = cartQuantity >= product.quantity;
+                        const outOfStock = product.quantity === 0;
+
+                        return (
                         <motion.article 
                             
                             whileHover={{scale: 1.01,}}
@@ -265,15 +281,25 @@ const MarketPlace = () => {
                             {/* Add to Cart Button */}
                             <article className='px-4 pb-4'>
                                 <motion.button
-                                    onClick={() => AddToCart(product._id, 1)}
-                                    whileHover={{scale: 1.02}}
-                                    whileTap={{scale: 1.90}}
-                                    className='w-full py-3 bg-[#7C9A7E] text-white font-semibold rounded-lg hover:bg-[#5E7D61] transition-colors'>
+                                    onClick={async () => {
+                                        setAddingToCart(prev => ({ ...prev, [product._id]: true }));
+                                        await AddToCart(product._id, 1);
+                                        setAddingToCart(prev => ({ ...prev, [product._id]: false }));
+                                    }}
+                                    disabled={isMax}
+                                    whileHover={!isMax && !outOfStock ? {scale: 1.02} : {}}
+                                    whileTap={!isMax && !outOfStock ? {scale: 1.90} : {}}
+                                    className={`w-full py-3 font-semibold rounded-lg transition-colors ${outOfStock ? 'bg-[#252C26] text-[#E8EDE8]/30 cursor-not-allowed' : isMax 
+                                                ? 'bg-[#252C26] text-[#7C9A7E] cursor-not-allowed' 
+                                                : 'bg-[#7C9A7E] text-white hover:bg-[#5E7D61]'
+                                    }`}
+                                    >
                                     Add to Cart
                                 </motion.button>
                             </article>
                         </motion.article>
-                    ))}
+                        )
+                    })}
                 </article>
 
             </article>
