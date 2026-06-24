@@ -3,28 +3,60 @@ import { useState,useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Heart, MessageCircle, ChevronLeft, Star, Truck, ShieldCheck, RotateCcw } from 'lucide-react';
 import UseProducts from '../Hooks/UseProducts';
-import {Loader2} from 'lucide-react'
+import {Loader2} from 'lucide-react';
+import UseCart from '../Hooks/UseCart';
+import UseAuth from '../Hooks/UseAuth';
+import { motion } from 'framer-motion';
+import UseMessage from '../Hooks/UseMessage';
 
 function ProductDetails() {
     const { id } = useParams();
     const [quantity, setQuantity] = useState(1);
     const [product, setProduct] = useState(null);
     const { SpecificProduct, loading } = UseProducts();
+    const { AddToCart, FetchCart, cart,} = UseCart();
+    const { user } = UseAuth();
+    const [addingTocart, setAddingTocart] = useState({});
+    const {messages,typColo,Showmessage} = UseMessage();
 
     useEffect(()=>{
         SpecificProduct(id)
         .then(({products}) => (setProduct(products)) )
     },[id]);
 
+    useEffect(() => {
+        FetchCart();
+    },[])
+
     console.log(product)
 
     if (!product) {
-    return (
-        <section className='w-full min-h-screen bg-[#1A1E1B]  flex justify-center items-center'>
-            <Loader2 className='animate-spin text-[#7C9A7E]' />
-        </section>
-    );
-}
+        return (
+            <section className='w-full min-h-screen bg-[#1A1E1B]  flex justify-center items-center'>
+                <Loader2 className='animate-spin text-[#7C9A7E]' />
+            </section>
+        );
+    }
+    const handleCart = async (productId) => {
+        try{
+
+            setAddingTocart(prev => ({...prev, [productId]: true}))
+            await AddToCart(productId,quantity)
+            setAddingTocart(prev => ({...prev, [productId]: false}))
+
+        }catch(err){
+            setAddingTocart(prev => ({ ...prev, [productId]: false }));
+            console.log(err)
+            Showmessage("failed", err.response.data.message || "unable to Add items any more")
+        }
+        
+    }
+
+    const cartItem = cart?.items?.find(pro => (pro.product?._id || pro.product) === product._id);
+    const cartQuantity = cartItem?.quantity || 0
+    const isMax = cartQuantity >= product.quantity;
+    const outOfStock = product.quantity === 0;
+
     return (
         <section className='w-full min-h-screen bg-[#1A1E1B] pt-20 px-4 pb-12'>
             
@@ -140,12 +172,36 @@ function ProductDetails() {
                 </article>
 
                 {/* Add to Cart - Full width at bottom */}
-                <button className='w-full py-4 bg-[#7C9A7E] text-white font-semibold rounded-lg hover:bg-[#5E7D61] transition-colors text-base'>
-                    Add to Cart - ₦{Number(product.price).toLocaleString()}
-                </button>
+                {
+                    user?.accountType === "buyer" 
+                    ? <motion.button 
+                        onClick={() => handleCart(product?._id)}
+                        disabled={isMax}
+                        whileHover={!isMax && !outOfStock ? {scale: 1.02}: {}}
+                        whileTap={!isMax && !outOfStock ? {scale: 1.90} : {}}
+                        className={`w-full py-3 font-semibold rounded-lg transition-colors flex justify-center items-center ${outOfStock ? 'bg-[#252C26] text-[#E8EDE8]/30 cursor-not-allowed' : isMax 
+                                                ? 'bg-[#252C26] text-[#7C9A7E] cursor-not-allowed' 
+                                                : 'bg-[#7C9A7E] text-white hover:bg-[#5E7D61]'
+                                    }`}
+                        >
+                            {
+                                outOfStock ? "Out Of Stock" : addingTocart[product._id] ? <Loader2 className="h-5 w-5 animate-spin text-white" /> : isMax ? "maximum in cart" : `Add to Cart - ₦${Number(product.price).toLocaleString()}`
+                            }
+                        </motion.button>
+                    : ""
+                }
+                
 
             </article>
-
+            {
+                messages && (
+                    <div className={`slider fixed top-4 right-4 text-white px-4 py-2 rounded z-50 ${typColo[messages.type]} `}>
+                        <h1>
+                            {messages.message}
+                        </h1>
+                    </div>
+                )
+            }
         </section>
     );
 }

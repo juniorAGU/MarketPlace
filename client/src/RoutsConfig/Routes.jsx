@@ -11,6 +11,7 @@ import AddProduct from "../pages/AddProduct";
 import MyProducts from "../pages/MyProducts";
 import EditeProduct from "../pages/EditeProduct";
 import Cart from "../pages/Cart";
+import Checkout from "../pages/Checkout";
 
 const Routes = [
     {
@@ -41,6 +42,13 @@ const Routes = [
     {
         path: 'cart',
         components: Cart,
+        isProtected: true,
+        role: ["user", "manager", "admin"],
+        accountType: "buyer"
+    },
+    {
+        path: 'checkout',
+        components: Checkout,
         isProtected: true,
         role: ["user", "manager", "admin"],
         accountType: "buyer"

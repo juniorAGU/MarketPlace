@@ -43,6 +43,15 @@ const ProfileSidebar = ({ isOpen, onClose }) => {
                     </span>
 
                     
+                    {user?.title ? (
+                        <p className='text-[#E8EDE8]/60 text-sm text-center mt-3 leading-relaxed'>
+                            "{user?.title}"
+                        </p>
+                    ) : (
+                        <p className='text-[#E8EDE8]/40 text-sm text-center mt-3 italic'>
+                            No title yet
+                        </p>
+                    )}
                     {user?.bio ? (
                         <p className='text-[#E8EDE8]/60 text-sm text-center mt-3 leading-relaxed'>
                             "{user.bio}"

@@ -6,7 +6,7 @@ section{
     width: 100%;
     min-height: 100vh;
 }
-@keyframes slid {
+@keyframes slider {
     from{
         opacity: 1;
         transform: translate(0);

@@ -142,7 +142,7 @@ const MarketPlace = () => {
     const FilterProducts = !Allfilter ? products : products.filter(p => p.category === Allfilter);
 
     const GetQuantityforcart = (productId) => {
-        const item = cart?.items.find(pro => ( pro.product?._id || pro.product) === productId);
+        const item = cart?.items?.find(pro => ( pro.product?._id || pro.product) === productId);
         return item?.quantity || 0
     }
 
@@ -289,12 +289,14 @@ const MarketPlace = () => {
                                     disabled={isMax}
                                     whileHover={!isMax && !outOfStock ? {scale: 1.02} : {}}
                                     whileTap={!isMax && !outOfStock ? {scale: 1.90} : {}}
-                                    className={`w-full py-3 font-semibold rounded-lg transition-colors ${outOfStock ? 'bg-[#252C26] text-[#E8EDE8]/30 cursor-not-allowed' : isMax 
+                                    className={`w-full py-3 font-semibold rounded-lg transition-colors flex justify-center items-center ${outOfStock ? 'bg-[#252C26] text-[#E8EDE8]/30 cursor-not-allowed' : isMax 
                                                 ? 'bg-[#252C26] text-[#7C9A7E] cursor-not-allowed' 
                                                 : 'bg-[#7C9A7E] text-white hover:bg-[#5E7D61]'
                                     }`}
                                     >
-                                    Add to Cart
+                                        {
+                                            outOfStock ? "Out Of Stock" : addingToCart[product._id] ? <Loader2 className="h-5 w-5 animate-spin text-white" /> : isMax ? "maximum in cart" : "Add to Cart"
+                                        }
                                 </motion.button>
                             </article>
                         </motion.article>

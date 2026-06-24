@@ -79,6 +79,7 @@ function Register() {
                 password: data.password,
                 accountType: data.accountType
             };
+            
 
             const success = await register(userData);
 
@@ -93,7 +94,7 @@ function Register() {
                 navigate("/")
             }
         }catch(err){
-            console.log(err);
+            console.log(err?.response?.data?.message);
             throw err
         }finally{
             setData({...data,loading: false})
