@@ -2,8 +2,8 @@ import Limiter, {ipKeyGenerator} from 'express-rate-limit'
 
 
 export const basicLimiter = Limiter({
-    windowMs: 5 * 60 * 1000,
-    max: 200,
+    windowMs: 1 * 60 * 1000,
+    max: 2000,
     message: {
         success: false,
         message: "Denied, To many attempts"
@@ -13,8 +13,8 @@ export const basicLimiter = Limiter({
 });
 
 export const AuthLimiter = Limiter({
-    windowMs: 5 * 60 * 1000,
-    max: 1000,
+    windowMs: 1 * 60 * 1000,
+    max: 10000,
     keyGenerator: (req) => {
         return `${ipKeyGenerator(req.ip)}-${req.body.email}`
     },

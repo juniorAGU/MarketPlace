@@ -16,6 +16,7 @@ import { productRouth } from './routes/productRoutes.js';
 import { CommentRoute } from './routes/CommentRouth.js';
 import { LikesRouth } from './routes/likeRouth.js';
 import { CartRoutes } from './routes/cartRoutes.js';
+import { orderRouter } from './routes/orderRoutes.js';
 
 
 
@@ -43,7 +44,8 @@ app.use("/", authRoute);
 app.use("/", productRouth);
 app.use("/", CommentRoute);
 app.use("/", LikesRouth);
-app.use("/", CartRoutes)
+app.use("/", CartRoutes);
+app.use("/", orderRouter);
 
 
 

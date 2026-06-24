@@ -36,6 +36,14 @@ const CreateCart = async (req,res,next) => {
         }else{
             const existing = exist.items.find(item => item.product.toString() === productId);
 
+            const currentQuantityInCart = existing ? existing.quantity : 0;
+            if(currentQuantityInCart + quantity > product.quantity){
+                return res.status(400).json({
+                    success: false,
+                    message: `only ${product.quantity} ${product.name} are available`
+                });
+            }
+
             if(existing){
                 existing.quantity += quantity
             }else{
@@ -54,7 +62,12 @@ const CreateCart = async (req,res,next) => {
         };
 
         const created = await Cart.findById(exist._id)
-                .populate("items.product", "name  image price")
+                .populate({path: "items.product",
+                    select: "name  image price seller", 
+                    populate: {
+                        path: "seller",
+                        select: "name"
+                }})
                 .lean();
 
         res.status(200).json({
@@ -78,7 +91,13 @@ const getCart = async (req,res,next) => {
         const userId = req.user._id;
 
         const cart = await Cart.findOne({ user: userId })
-            .populate("items.product", "name images price")
+            .populate({ path: "items.product",
+                select: "name images price seller",
+                populate: {
+                    path: "seller",
+                    select: "name"
+                }
+            })
             .lean();
 
         if (!cart) {

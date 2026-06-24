@@ -7,9 +7,10 @@ import { Upload, UploadToCloudinary } from '../CloudinaryConfig/cloudinary.js';
 const CreateUser = async (req, res, next ) => {
     try{
         const cleaned = sanitizer(req.body)
-        const {name, email, password} = cleaned;
+        const {name, email, password, accountType} = cleaned;
         
-        if(!name || !email || !password){
+        
+        if(!name || !email || !password || !accountType){
             return res.status(400).json({
                 success: false,
                 message: "inputs must not be empty"
@@ -30,6 +31,7 @@ const CreateUser = async (req, res, next ) => {
         const newUser =  await User.create({
             name,
             email,
+            accountType,
             password: hashed,
             role: "user",
             subscription: "free",
